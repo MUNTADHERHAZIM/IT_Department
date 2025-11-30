@@ -166,7 +166,14 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # WhiteNoise للملفات الثابتة (فقط في الإنتاج)
 try:
     import whitenoise
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 except ImportError:
     pass
 
