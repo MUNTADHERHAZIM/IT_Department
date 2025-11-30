@@ -1,0 +1,142 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}تفاصيل الطلب #{{ ticket.id }} - نظام إدارة الطلبات{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1><i class="bi bi-file-earmark-text"></i> تفاصيل الطلب #{{ ticket.id }}</h1>
+            <p class="lead text-muted">تاريخ الإنشاء: {{ ticket.created_at|date:"Y/m/d H:i" }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Info Card -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> معلومات الطلب</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">الاسم الكامل</h6>
+                        <p><i class="bi bi-person-fill text-primary"></i> {{ ticket.full_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">البريد الإلكتروني</h6>
+                        <p><i class="bi bi-envelope-fill text-primary"></i> {{ ticket.email }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">القسم</h6>
+                        <p><i class="bi bi-building text-primary"></i> {{ ticket.department.name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">نوع الطلب</h6>
+                        <p><i class="bi bi-tag-fill text-primary"></i> {{ ticket.request_type.name }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">وصف المشكلة</h6>
+                    <div class="alert alert-light">
+                        {{ ticket.description|linebreaks }}
+                    </div>
+                </div>
+
+                {% if ticket.attachment %}
+                <div class="mb-3">
+                    <h6 class="text-muted">الملف المرفق</h6>
+                    <a href="{{ ticket.attachment.url }}" class="btn btn-outline-primary" target="_blank">
+                        <i class="bi bi-download"></i> تحميل الملف
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if ticket.internal_notes and user.is_staff %}
+                <div class="mb-3">
+                    <h6 class="text-muted">ملاحظات داخلية (للإدارة فقط)</h6>
+                    <div class="alert alert-warning">
+                        {{ ticket.internal_notes|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-check-circle"></i> الحالة والأولوية</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">الحالة</h6>
+                    <span class="badge bg-{{ ticket.get_status_display_color }} fs-6">
+                        {{ ticket.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">الأولوية</h6>
+                    <span class="badge bg-{{ ticket.get_priority_display_color }} fs-6">
+                        {{ ticket.get_priority_display }}
+                    </span>
+                </div>
+
+                {% if ticket.assigned_to %}
+                <div class="mb-3">
+                    <h6 class="text-muted">معين إلى</h6>
+                    <p><i class="bi bi-person-check-fill text-success"></i> {{
+                        ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}</p>
+                </div>
+                {% else %}
+                <div class="mb-3">
+                    <h6 class="text-muted">معين إلى</h6>
+                    <p class="text-muted">لم يتم التعيين بعد</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> التواريخ</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">تاريخ الإنشاء</h6>
+                    <p><i class="bi bi-calendar-plus text-info"></i> {{ ticket.created_at|date:"Y/m/d H:i" }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="text-muted">آخر تحديث</h6>
+                    <p><i class="bi bi-calendar-check text-info"></i> {{ ticket.updated_at|date:"Y/m/d H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="text-center">
+            <a href="{% url 'tickets:ticket_list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-right"></i> العودة إلى القائمة
+            </a>
+            {% if user.is_authenticated and user.is_staff %}
+            <a href="/admin/tickets/ticket/{{ ticket.id }}/change/" class="btn btn-warning">
+                <i class="bi bi-pencil-fill"></i> تعديل (Admin)
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

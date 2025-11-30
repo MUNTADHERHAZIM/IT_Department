@@ -1,0 +1,142 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}قائمة الطلبات - نظام إدارة الطلبات{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1><i class="bi bi-list-ul"></i> قائمة الطلبات</h1>
+            <p class="lead text-muted">إجمالي الطلبات: {{ total_count }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-funnel"></i> فلترة الطلبات</h5>
+                <form method="get" class="row g-3">
+                    <div class="col-md-2">
+                        {{ filter_form.status }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.priority }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.department }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ filter_form.request_type }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ filter_form.search }}
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tickets Table -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>الاسم</th>
+                                <th>القسم</th>
+                                <th>نوع الطلب</th>
+                                <th>الأولوية</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in page_obj %}
+                            <tr>
+                                <td><strong>#{{ ticket.id }}</strong></td>
+                                <td>{{ ticket.full_name }}</td>
+                                <td>{{ ticket.department.name }}</td>
+                                <td>{{ ticket.request_type.name }}</td>
+                                <td>
+                                    <span class="badge bg-{{ ticket.get_priority_display_color }}">
+                                        {{ ticket.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ ticket.get_status_display_color }}">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ ticket.created_at|date:"Y/m/d" }}</td>
+                                <td>
+                                    <a href="{% url 'tickets:ticket_detail' ticket.id %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> عرض
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.request_type %}&request_type={{ request.GET.request_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">الأولى</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.request_type %}&request_type={{ request.GET.request_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">السابقة</a>
+                        </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.request_type %}&request_type={{ request.GET.request_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">التالية</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.request_type %}&request_type={{ request.GET.request_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">الأخيرة</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">لا توجد طلبات لعرضها</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

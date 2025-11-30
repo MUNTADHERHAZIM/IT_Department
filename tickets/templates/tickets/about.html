@@ -1,0 +1,154 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}حول النظام - نظام إدارة الطلبات{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header text-center">
+            <h1><i class="bi bi-info-circle-fill"></i> حول النظام</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- System Info -->
+        <div class="card mb-4">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-ticket-detailed-fill" style="font-size: 5rem; color: #667eea;"></i>
+                </div>
+                <h2 class="text-primary">{{ system_name }}</h2>
+                <h4 class="text-muted">{{ university_name }}</h4>
+                <p class="lead mt-3">
+                    نظام متكامل لإدارة واستلام الطلبات لقسم الحاسبة الإلكترونية.
+                    يوفر النظام واجهة سهلة الاستخدام لتقديم الطلبات ومتابعتها،
+                    مع لوحة تحكم شاملة للإدارة.
+                </p>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-star-fill"></i> ميزات النظام</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                تقديم الطلبات بسهولة
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                متابعة حالة الطلبات
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                رفع الملفات المرفقة
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                نظام أولويات متقدم
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                لوحة تحكم شاملة
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                فلترة وبحث متقدم
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                تعيين الطلبات للموظفين
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                إشعارات بريدية (قيد التطوير)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> إحصائيات النظام</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3">
+                            <i class="bi bi-building" style="font-size: 2.5rem; color: #667eea;"></i>
+                            <h3 class="mt-2">{{ departments_count }}</h3>
+                            <p class="text-muted">الأقسام</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3">
+                            <i class="bi bi-tags" style="font-size: 2.5rem; color: #f093fb;"></i>
+                            <h3 class="mt-2">{{ request_types_count }}</h3>
+                            <p class="text-muted">أنواع الطلبات</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3">
+                            <i class="bi bi-inbox-fill" style="font-size: 2.5rem; color: #4facfe;"></i>
+                            <h3 class="mt-2">{{ total_tickets }}</h3>
+                            <p class="text-muted">إجمالي الطلبات</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developer Info -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-code-slash"></i> معلومات المطور</h5>
+            </div>
+            <div class="card-body text-center p-4">
+                <i class="bi bi-person-badge-fill" style="font-size: 4rem; color: #667eea;"></i>
+                <h3 class="mt-3">{{ developer_name }}</h3>
+                <p class="text-muted">مطور النظام</p>
+                <p>تم تطوير هذا النظام باستخدام Django وBootstrap RTL</p>
+                <div class="mt-4">
+                    <span class="badge bg-primary me-2">Django 4+</span>
+                    <span class="badge bg-info me-2">Bootstrap 5 RTL</span>
+                    <span class="badge bg-success me-2">Python</span>
+                    <span class="badge bg-warning">SQLite</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5><i class="bi bi-envelope-fill"></i> للاستفسارات والدعم</h5>
+                <p class="text-muted">يرجى التواصل مع قسم الحاسبة الإلكترونية</p>
+                <p>
+                    <i class="bi bi-geo-alt-fill text-primary"></i>
+                    جامعة الكنوز - قسم الحاسبة الإلكترونية
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'tickets:home' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-house-fill"></i>
+                العودة إلى الصفحة الرئيسية
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
