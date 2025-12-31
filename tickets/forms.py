@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket, Department, RequestType
+from .models import Ticket, Department, RequestType, Comment
 
 
 class TicketSubmissionForm(forms.ModelForm):
@@ -10,6 +10,7 @@ class TicketSubmissionForm(forms.ModelForm):
         fields = [
             'full_name',
             'email',
+            'phone',
             'department',
             'request_type',
             'description',
@@ -26,6 +27,11 @@ class TicketSubmissionForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'example@alkunuz.edu.iq',
                 'required': True
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '07XX XXX XXXX',
+                'dir': 'ltr'
             }),
             'department': forms.Select(attrs={
                 'class': 'form-select',
@@ -53,6 +59,7 @@ class TicketSubmissionForm(forms.ModelForm):
         labels = {
             'full_name': 'الاسم الكامل',
             'email': 'البريد الإلكتروني',
+            'phone': 'رقم الهاتف (اختياري)',
             'department': 'القسم',
             'request_type': 'نوع الطلب',
             'description': 'وصف المشكلة أو الطلب',
@@ -60,7 +67,8 @@ class TicketSubmissionForm(forms.ModelForm):
             'attachment': 'ملف مرفق (اختياري)'
         }
         help_texts = {
-            'attachment': 'يمكنك إرفاق ملف (PDF, Word, أو صورة) بحجم أقصى 5 ميجابايت'
+            'attachment': 'يمكنك إرفاق ملف (PDF, Word, أو صورة) بحجم أقصى 5 ميجابايت',
+            'phone': 'رقم الهاتف للتواصل السريع'
         }
     
     def clean_attachment(self):
@@ -70,6 +78,41 @@ class TicketSubmissionForm(forms.ModelForm):
             if attachment.size > 5 * 1024 * 1024:  # 5MB
                 raise forms.ValidationError('حجم الملف يجب أن لا يتجاوز 5 ميجابايت')
         return attachment
+
+
+class CommentForm(forms.ModelForm):
+    """نموذج إضافة تعليق"""
+    
+    class Meta:
+        model = Comment
+        fields = ['author_name', 'author_email', 'comment_text', 'attachment']
+        widgets = {
+            'author_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'اسمك',
+                'required': True
+            }),
+            'author_email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'بريدك الإلكتروني'
+            }),
+            'comment_text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'اكتب تعليقك هنا...',
+                'required': True
+            }),
+            'attachment': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'
+            })
+        }
+        labels = {
+            'author_name': 'الاسم',
+            'author_email': 'البريد الإلكتروني',
+            'comment_text': 'التعليق',
+            'attachment': 'مرفق (اختياري)'
+        }
 
 
 class TicketFilterForm(forms.Form):

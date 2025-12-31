@@ -1,142 +1,357 @@
 {% extends 'tickets/base.html' %}
 
-{% block title %}تفاصيل الطلب #{{ ticket.id }} - نظام إدارة الطلبات{% endblock %}
+{% block title %}{{ ticket.ticket_number }} - نظام إدارة الطلبات{% endblock %}
+
+{% block extra_css %}
+<style>
+  .timeline { position: relative; padding: 20px 0; }
+  .timeline::before{
+    content:'';
+    position:absolute;
+    right:30px; top:0; bottom:0;
+    width:3px;
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+  }
+  .timeline-item{ position:relative; padding-right:70px; padding-bottom:30px; }
+  .timeline-marker{
+    position:absolute; right:16px; top:0;
+    width:30px; height:30px; border-radius:50%;
+    background:white; border:3px solid #667eea;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; z-index:1;
+  }
+  .timeline-content{
+    background:white; padding:15px; border-radius:10px;
+    box-shadow:0 3px 10px rgba(0,0,0,.1);
+  }
+  .stat-card{
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:white; padding:15px; border-radius:10px;
+    margin-bottom:15px; text-align:center;
+  }
+  .stat-card h4{ font-size:2rem; margin:0; font-weight:bold; }
+  .stat-card p{ margin:0; font-size:.9rem; }
+</style>
+{% endblock %}
 
 {% block content %}
+<!-- Header -->
 <div class="row">
-    <div class="col-md-12">
-        <div class="page-header">
-            <h1><i class="bi bi-file-earmark-text"></i> تفاصيل الطلب #{{ ticket.id }}</h1>
-            <p class="lead text-muted">تاريخ الإنشاء: {{ ticket.created_at|date:"Y/m/d H:i" }}</p>
+  <div class="col-md-12">
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1><i class="bi bi-file-earmark-text"></i> {{ ticket.ticket_number }}</h1>
+          <p class="lead text-muted mb-0">{{ ticket.full_name }}</p>
         </div>
+        <div class="text-end">
+          {# ملاحظة: get_status_display_color يجب أن يرجع اسم لون صالح لـ Bootstrap مثل success/danger/warning... #}
+          <span class="badge bg-{{ ticket.get_status_display_color }} fs-5">
+            {{ ticket.get_status_display }}
+          </span>
+          {% if ticket.is_urgent %}
+            <span class="badge bg-danger fs-5">
+              <i class="bi bi-exclamation-triangle-fill"></i> عاجل
+            </span>
+          {% endif %}
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <div class="row">
-    <!-- Main Info Card -->
-    <div class="col-lg-8 mb-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-info-circle"></i> معلومات الطلب</h5>
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h6 class="text-muted">الاسم الكامل</h6>
-                        <p><i class="bi bi-person-fill text-primary"></i> {{ ticket.full_name }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-muted">البريد الإلكتروني</h6>
-                        <p><i class="bi bi-envelope-fill text-primary"></i> {{ ticket.email }}</p>
-                    </div>
-                </div>
+  <!-- Main Content -->
+  <div class="col-lg-8 mb-4">
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h6 class="text-muted">القسم</h6>
-                        <p><i class="bi bi-building text-primary"></i> {{ ticket.department.name }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-muted">نوع الطلب</h6>
-                        <p><i class="bi bi-tag-fill text-primary"></i> {{ ticket.request_type.name }}</p>
-                    </div>
-                </div>
+    <!-- معلومات الطلب -->
+    <div class="card mb-3">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-info-circle"></i> معلومات الطلب</h5>
+      </div>
+      <div class="card-body">
 
-                <div class="mb-3">
-                    <h6 class="text-muted">وصف المشكلة</h6>
-                    <div class="alert alert-light">
-                        {{ ticket.description|linebreaks }}
-                    </div>
-                </div>
-
-                {% if ticket.attachment %}
-                <div class="mb-3">
-                    <h6 class="text-muted">الملف المرفق</h6>
-                    <a href="{{ ticket.attachment.url }}" class="btn btn-outline-primary" target="_blank">
-                        <i class="bi bi-download"></i> تحميل الملف
-                    </a>
-                </div>
-                {% endif %}
-
-                {% if ticket.internal_notes and user.is_staff %}
-                <div class="mb-3">
-                    <h6 class="text-muted">ملاحظات داخلية (للإدارة فقط)</h6>
-                    <div class="alert alert-warning">
-                        {{ ticket.internal_notes|linebreaks }}
-                    </div>
-                </div>
-                {% endif %}
-            </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-person"></i> الاسم الكامل</h6>
+            <p class="fs-5">{{ ticket.full_name }}</p>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-envelope"></i> البريد الإلكتروني</h6>
+            <p class="fs-5">{{ ticket.email }}</p>
+          </div>
         </div>
+
+        {% if ticket.phone %}
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <h6 class="text-muted"><i class="bi bi-telephone"></i> رقم الهاتف</h6>
+              <p class="fs-5" dir="ltr" style="text-align:right;">{{ ticket.phone }}</p>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted"><i class="bi bi-eye"></i> عدد المشاهدات</h6>
+              <p class="fs-5">{{ ticket.views_count }}</p>
+            </div>
+          </div>
+        {% else %}
+          {# إذا لا يوجد هاتف، لا تخفي عدد المشاهدات #}
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <h6 class="text-muted"><i class="bi bi-eye"></i> عدد المشاهدات</h6>
+              <p class="fs-5">{{ ticket.views_count }}</p>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-building"></i> القسم</h6>
+            <p class="fs-5">{{ ticket.department.name }}</p>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-tag"></i> نوع الطلب</h6>
+            <p class="fs-5">{{ ticket.request_type.name }}</p>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <h6 class="text-muted"><i class="bi bi-card-text"></i> وصف المشكلة</h6>
+          <div class="alert alert-light">
+            {{ ticket.description|linebreaks }}
+          </div>
+        </div>
+
+        {% if ticket.attachment %}
+          <div class="mb-3">
+            <h6 class="text-muted"><i class="bi bi-paperclip"></i> الملف المرفق</h6>
+            <a href="{{ ticket.attachment.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener">
+              <i class="bi bi-download"></i> تحميل الملف
+            </a>
+          </div>
+        {% endif %}
+
+        {% if ticket.resolution_notes %}
+          <div class="mb-3">
+            <h6 class="text-muted"><i class="bi bi-check-circle"></i> ملاحظات الحل</h6>
+            <div class="alert alert-success">
+              {{ ticket.resolution_notes|linebreaks }}
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
     </div>
 
-    <!-- Status Card -->
-    <div class="col-lg-4 mb-4">
-        <div class="card mb-3">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-check-circle"></i> الحالة والأولوية</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h6 class="text-muted">الحالة</h6>
-                    <span class="badge bg-{{ ticket.get_status_display_color }} fs-6">
-                        {{ ticket.get_status_display }}
-                    </span>
-                </div>
+    <!-- التعليقات -->
+    <div class="card mb-3">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+          <i class="bi bi-chat-dots"></i> التعليقات
+          <span class="badge bg-light text-dark">{{ comment_count }}</span>
+        </h5>
+      </div>
 
-                <div class="mb-3">
-                    <h6 class="text-muted">الأولوية</h6>
-                    <span class="badge bg-{{ ticket.get_priority_display_color }} fs-6">
-                        {{ ticket.get_priority_display }}
-                    </span>
+      <div class="card-body">
+        {% if comments %}
+          {% for comment in comments %}
+            <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong><i class="bi bi-person-circle"></i> {{ comment.author_name }}</strong>
+                  {% if comment.author_email %}
+                    <small class="text-muted">({{ comment.author_email }})</small>
+                  {% endif %}
                 </div>
+                <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+              </div>
 
-                {% if ticket.assigned_to %}
-                <div class="mb-3">
-                    <h6 class="text-muted">معين إلى</h6>
-                    <p><i class="bi bi-person-check-fill text-success"></i> {{
-                        ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}</p>
-                </div>
-                {% else %}
-                <div class="mb-3">
-                    <h6 class="text-muted">معين إلى</h6>
-                    <p class="text-muted">لم يتم التعيين بعد</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+              <div class="mt-2 mb-0">{{ comment.comment_text|linebreaks }}</div>
 
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> التواريخ</h5>
+              {% if comment.attachment %}
+                <a href="{{ comment.attachment.url }}" class="btn btn-sm btn-outline-secondary mt-2" target="_blank" rel="noopener">
+                  <i class="bi bi-paperclip"></i> عرض المرفق
+                </a>
+              {% endif %}
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h6 class="text-muted">تاريخ الإنشاء</h6>
-                    <p><i class="bi bi-calendar-plus text-info"></i> {{ ticket.created_at|date:"Y/m/d H:i" }}</p>
-                </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted text-center"><i class="bi bi-chat-square-text"></i> لا توجد تعليقات بعد</p>
+        {% endif %}
 
-                <div class="mb-3">
-                    <h6 class="text-muted">آخر تحديث</h6>
-                    <p><i class="bi bi-calendar-check text-info"></i> {{ ticket.updated_at|date:"Y/m/d H:i" }}</p>
-                </div>
+        <hr>
+
+        <!-- نموذج إضافة تعليق -->
+        <h6 class="mb-3"><i class="bi bi-plus-circle"></i> إضافة تعليق جديد</h6>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ comment_form.author_name.id_for_label }}">
+                {{ comment_form.author_name.label }}
+              </label>
+              {{ comment_form.author_name }}
+              {{ comment_form.author_name.errors }}
             </div>
-        </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ comment_form.author_email.id_for_label }}">
+                {{ comment_form.author_email.label }}
+              </label>
+              {{ comment_form.author_email }}
+              {{ comment_form.author_email.errors }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ comment_form.comment_text.id_for_label }}">
+              {{ comment_form.comment_text.label }}
+            </label>
+            {{ comment_form.comment_text }}
+            {{ comment_form.comment_text.errors }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ comment_form.attachment.id_for_label }}">
+              {{ comment_form.attachment.label }}
+            </label>
+            {{ comment_form.attachment }}
+            {{ comment_form.attachment.errors }}
+          </div>
+
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-send-fill"></i> إضافة تعليق
+          </button>
+        </form>
+      </div>
     </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="col-lg-4 mb-4">
+
+    <!-- إحصائيات -->
+    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+      <h4><i class="bi bi-flag"></i> {{ ticket.get_priority_display }}</h4>
+      <p>الأولوية</p>
+    </div>
+
+    {% if ticket.get_age %}
+      <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <h4>{{ ticket.get_age }} يوم</h4>
+        <p>عمر الطلب</p>
+      </div>
+    {% endif %}
+
+    {% if ticket.get_resolution_time %}
+      <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+        <h4>{{ ticket.get_resolution_time }} ساعة</h4>
+        <p>وقت الحل</p>
+      </div>
+    {% endif %}
+
+    <!-- معلومات إضافية -->
+    <div class="card mb-3">
+      <div class="card-header bg-info text-white">
+        <h6 class="mb-0"><i class="bi bi-clock-history"></i> التواريخ</h6>
+      </div>
+      <div class="card-body">
+
+        <div class="mb-2">
+          <small class="text-muted">تاريخ الإنشاء</small>
+          <p class="mb-0"><i class="bi bi-calendar-plus"></i> {{ ticket.created_at|date:"Y/m/d H:i" }}</p>
+        </div>
+
+        <div class="mb-2">
+          <small class="text-muted">آخر تحديث</small>
+          <p class="mb-0"><i class="bi bi-calendar-check"></i> {{ ticket.updated_at|date:"Y/m/d H:i" }}</p>
+        </div>
+
+        {% if ticket.resolved_at %}
+          <div class="mb-2">
+            <small class="text-muted">تاريخ الحل</small>
+            {# ✅ إصلاح: كان كسر سطر داخل date filter يسبب خطأ TemplateSyntaxError #}
+            <p class="mb-0 text-success">
+              <i class="bi bi-check-circle"></i> {{ ticket.resolved_at|date:"Y/m/d H:i" }}
+            </p>
+          </div>
+        {% endif %}
+
+        {% if ticket.due_date %}
+          <div class="mb-2">
+            <small class="text-muted">تاريخ الاستحقاق</small>
+            <p class="mb-0 {% if ticket.is_overdue %}text-danger{% endif %}">
+              <i class="bi bi-alarm"></i> {{ ticket.due_date|date:"Y/m/d H:i" }}
+              {% if ticket.is_overdue %}
+                <span class="badge bg-danger">متأخر</span>
+              {% endif %}
+            </p>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    {% if ticket.assigned_to %}
+      <div class="card mb-3">
+        <div class="card-header bg-warning text-dark">
+          <h6 class="mb-0"><i class="bi bi-person-check"></i> معين إلى</h6>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">
+            <i class="bi bi-person-badge"></i>
+            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Timeline الأنشطة -->
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h6 class="mb-0"><i class="bi bi-activity"></i> سجل الأنشطة</h6>
+      </div>
+      <div class="card-body">
+        <div class="timeline">
+          {% for log in activity_logs %}
+            <div class="timeline-item">
+              <div class="timeline-marker">
+                <i class="bi bi-circle-fill" style="font-size: 8px; color: #667eea;"></i>
+              </div>
+              <div class="timeline-content">
+                <strong>{{ log.get_action_type_display }}</strong>
+                <p class="mb-1 small">{{ log.description }}</p>
+                <small class="text-muted">
+                  <i class="bi bi-person"></i> {{ log.performed_by_name }}
+                  | <i class="bi bi-clock"></i> {{ log.created_at|date:"Y/m/d H:i" }}
+                </small>
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-muted text-center"><i class="bi bi-info-circle"></i> لا توجد أنشطة مسجلة</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
+<!-- Actions -->
 <div class="row">
-    <div class="col-md-12">
-        <div class="text-center">
-            <a href="{% url 'tickets:ticket_list' %}" class="btn btn-outline-primary">
-                <i class="bi bi-arrow-right"></i> العودة إلى القائمة
-            </a>
-            {% if user.is_authenticated and user.is_staff %}
-            <a href="/admin/tickets/ticket/{{ ticket.id }}/change/" class="btn btn-warning">
-                <i class="bi bi-pencil-fill"></i> تعديل (Admin)
-            </a>
-            {% endif %}
-        </div>
+  <div class="col-md-12">
+    <div class="text-center">
+      <a href="{% url 'tickets:ticket_list' %}" class="btn btn-outline-primary">
+        <i class="bi bi-arrow-right"></i> العودة إلى القائمة
+      </a>
+
+      {% if user.is_authenticated and user.is_staff %}
+        <a href="{% url 'admin:tickets_ticket_change' ticket.id %}" class="btn btn-warning">
+          <i class="bi bi-pencil-fill"></i> تعديل (Admin)
+        </a>
+      {% endif %}
     </div>
+  </div>
 </div>
 {% endblock %}
