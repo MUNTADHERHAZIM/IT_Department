@@ -4,37 +4,196 @@
 
 {% block extra_css %}
 <style>
-  .timeline { position: relative; padding: 20px 0; }
-  .timeline::before{
-    content:'';
-    position:absolute;
-    right:30px; top:0; bottom:0;
-    width:3px;
+  .timeline {
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    right: 30px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
     background: linear-gradient(to bottom, #667eea, #764ba2);
   }
-  .timeline-item{ position:relative; padding-right:70px; padding-bottom:30px; }
-  .timeline-marker{
-    position:absolute; right:16px; top:0;
-    width:30px; height:30px; border-radius:50%;
-    background:white; border:3px solid #667eea;
-    display:flex; align-items:center; justify-content:center;
-    font-size:14px; z-index:1;
+
+  .timeline-item {
+    position: relative;
+    padding-right: 70px;
+    padding-bottom: 30px;
   }
-  .timeline-content{
-    background:white; padding:15px; border-radius:10px;
-    box-shadow:0 3px 10px rgba(0,0,0,.1);
+
+  .timeline-marker {
+    position: absolute;
+    right: 16px;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 1;
   }
-  .stat-card{
+
+  .timeline-content {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
+  }
+
+  .stat-card {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color:white; padding:15px; border-radius:10px;
-    margin-bottom:15px; text-align:center;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    text-align: center;
   }
-  .stat-card h4{ font-size:2rem; margin:0; font-weight:bold; }
-  .stat-card p{ margin:0; font-size:.9rem; }
+
+  .stat-card h4 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .stat-card p {
+    margin: 0;
+    font-size: .9rem;
+  }
+
+  /* Print Styles */
+  @media print {
+    body {
+      background: white !important;
+    }
+
+    .navbar,
+    .sidebar,
+    footer,
+    .no-print,
+    form,
+    .btn,
+    .timeline,
+    .stat-card {
+      display: none !important;
+    }
+
+    .card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+    }
+
+    .card-header {
+      background: #f8f9fa !important;
+      color: #333 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page-header {
+      border-bottom: 2px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .col-lg-8 {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .col-lg-4 {
+      display: none !important;
+    }
+
+    .print-header {
+      display: block !important;
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 3px double #333;
+      padding-bottom: 15px;
+    }
+
+    .print-header h2 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .print-header p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .print-footer {
+      display: block !important;
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 15px;
+      border-top: 2px solid #667eea;
+      font-size: 12px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .print-footer .developer-info {
+      margin-bottom: 10px;
+    }
+
+    .print-footer .developer-info h4 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .print-footer .developer-info p {
+      margin: 3px 0;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .print-footer .print-date {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #888;
+    }
+  }
+
+  .print-header,
+  .print-footer {
+    display: none;
+  }
+
+  .btn-print {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+
+  .btn-print:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+    color: white;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Print Header - يظهر فقط عند الطباعة -->
+<div class="print-header">
+  <h2><i class="bi bi-ticket-perforated"></i> نظام إدارة الطلبات</h2>
+  <p>قسم الحاسبة الالكترونية</p>
+  <p style="font-size: 16px; font-weight: bold; margin-top: 10px;">تفاصيل الطلب: {{ ticket.ticket_number }}</p>
+</div>
+
 <!-- Header -->
 <div class="row">
   <div class="col-md-12">
@@ -50,9 +209,9 @@
             {{ ticket.get_status_display }}
           </span>
           {% if ticket.is_urgent %}
-            <span class="badge bg-danger fs-5">
-              <i class="bi bi-exclamation-triangle-fill"></i> عاجل
-            </span>
+          <span class="badge bg-danger fs-5">
+            <i class="bi bi-exclamation-triangle-fill"></i> عاجل
+          </span>
           {% endif %}
         </div>
       </div>
@@ -83,24 +242,24 @@
         </div>
 
         {% if ticket.phone %}
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <h6 class="text-muted"><i class="bi bi-telephone"></i> رقم الهاتف</h6>
-              <p class="fs-5" dir="ltr" style="text-align:right;">{{ ticket.phone }}</p>
-            </div>
-            <div class="col-md-6">
-              <h6 class="text-muted"><i class="bi bi-eye"></i> عدد المشاهدات</h6>
-              <p class="fs-5">{{ ticket.views_count }}</p>
-            </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-telephone"></i> رقم الهاتف</h6>
+            <p class="fs-5" dir="ltr" style="text-align:right;">{{ ticket.phone }}</p>
           </div>
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-eye"></i> عدد المشاهدات</h6>
+            <p class="fs-5">{{ ticket.views_count }}</p>
+          </div>
+        </div>
         {% else %}
-          {# إذا لا يوجد هاتف، لا تخفي عدد المشاهدات #}
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <h6 class="text-muted"><i class="bi bi-eye"></i> عدد المشاهدات</h6>
-              <p class="fs-5">{{ ticket.views_count }}</p>
-            </div>
+        {# إذا لا يوجد هاتف، لا تخفي عدد المشاهدات #}
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h6 class="text-muted"><i class="bi bi-eye"></i> عدد المشاهدات</h6>
+            <p class="fs-5">{{ ticket.views_count }}</p>
           </div>
+        </div>
         {% endif %}
 
         <div class="row mb-3">
@@ -122,21 +281,21 @@
         </div>
 
         {% if ticket.attachment %}
-          <div class="mb-3">
-            <h6 class="text-muted"><i class="bi bi-paperclip"></i> الملف المرفق</h6>
-            <a href="{{ ticket.attachment.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener">
-              <i class="bi bi-download"></i> تحميل الملف
-            </a>
-          </div>
+        <div class="mb-3">
+          <h6 class="text-muted"><i class="bi bi-paperclip"></i> الملف المرفق</h6>
+          <a href="{{ ticket.attachment.url }}" class="btn btn-outline-primary" target="_blank" rel="noopener">
+            <i class="bi bi-download"></i> تحميل الملف
+          </a>
+        </div>
         {% endif %}
 
         {% if ticket.resolution_notes %}
-          <div class="mb-3">
-            <h6 class="text-muted"><i class="bi bi-check-circle"></i> ملاحظات الحل</h6>
-            <div class="alert alert-success">
-              {{ ticket.resolution_notes|linebreaks }}
-            </div>
+        <div class="mb-3">
+          <h6 class="text-muted"><i class="bi bi-check-circle"></i> ملاحظات الحل</h6>
+          <div class="alert alert-success">
+            {{ ticket.resolution_notes|linebreaks }}
           </div>
+        </div>
         {% endif %}
 
       </div>
@@ -153,29 +312,30 @@
 
       <div class="card-body">
         {% if comments %}
-          {% for comment in comments %}
-            <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <strong><i class="bi bi-person-circle"></i> {{ comment.author_name }}</strong>
-                  {% if comment.author_email %}
-                    <small class="text-muted">({{ comment.author_email }})</small>
-                  {% endif %}
-                </div>
-                <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
-              </div>
-
-              <div class="mt-2 mb-0">{{ comment.comment_text|linebreaks }}</div>
-
-              {% if comment.attachment %}
-                <a href="{{ comment.attachment.url }}" class="btn btn-sm btn-outline-secondary mt-2" target="_blank" rel="noopener">
-                  <i class="bi bi-paperclip"></i> عرض المرفق
-                </a>
+        {% for comment in comments %}
+        <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+          <div class="d-flex justify-content-between">
+            <div>
+              <strong><i class="bi bi-person-circle"></i> {{ comment.author_name }}</strong>
+              {% if comment.author_email %}
+              <small class="text-muted">({{ comment.author_email }})</small>
               {% endif %}
             </div>
-          {% endfor %}
+            <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+          </div>
+
+          <div class="mt-2 mb-0">{{ comment.comment_text|linebreaks }}</div>
+
+          {% if comment.attachment %}
+          <a href="{{ comment.attachment.url }}" class="btn btn-sm btn-outline-secondary mt-2" target="_blank"
+            rel="noopener">
+            <i class="bi bi-paperclip"></i> عرض المرفق
+          </a>
+          {% endif %}
+        </div>
+        {% endfor %}
         {% else %}
-          <p class="text-muted text-center"><i class="bi bi-chat-square-text"></i> لا توجد تعليقات بعد</p>
+        <p class="text-muted text-center"><i class="bi bi-chat-square-text"></i> لا توجد تعليقات بعد</p>
         {% endif %}
 
         <hr>
@@ -238,17 +398,17 @@
     </div>
 
     {% if ticket.get_age %}
-      <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-        <h4>{{ ticket.get_age }} يوم</h4>
-        <p>عمر الطلب</p>
-      </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+      <h4>{{ ticket.get_age }} يوم</h4>
+      <p>عمر الطلب</p>
+    </div>
     {% endif %}
 
     {% if ticket.get_resolution_time %}
-      <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-        <h4>{{ ticket.get_resolution_time }} ساعة</h4>
-        <p>وقت الحل</p>
-      </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+      <h4>{{ ticket.get_resolution_time }} ساعة</h4>
+      <p>وقت الحل</p>
+    </div>
     {% endif %}
 
     <!-- معلومات إضافية -->
@@ -269,42 +429,42 @@
         </div>
 
         {% if ticket.resolved_at %}
-          <div class="mb-2">
-            <small class="text-muted">تاريخ الحل</small>
-            {# ✅ إصلاح: كان كسر سطر داخل date filter يسبب خطأ TemplateSyntaxError #}
-            <p class="mb-0 text-success">
-              <i class="bi bi-check-circle"></i> {{ ticket.resolved_at|date:"Y/m/d H:i" }}
-            </p>
-          </div>
+        <div class="mb-2">
+          <small class="text-muted">تاريخ الحل</small>
+          {# ✅ إصلاح: كان كسر سطر داخل date filter يسبب خطأ TemplateSyntaxError #}
+          <p class="mb-0 text-success">
+            <i class="bi bi-check-circle"></i> {{ ticket.resolved_at|date:"Y/m/d H:i" }}
+          </p>
+        </div>
         {% endif %}
 
         {% if ticket.due_date %}
-          <div class="mb-2">
-            <small class="text-muted">تاريخ الاستحقاق</small>
-            <p class="mb-0 {% if ticket.is_overdue %}text-danger{% endif %}">
-              <i class="bi bi-alarm"></i> {{ ticket.due_date|date:"Y/m/d H:i" }}
-              {% if ticket.is_overdue %}
-                <span class="badge bg-danger">متأخر</span>
-              {% endif %}
-            </p>
-          </div>
+        <div class="mb-2">
+          <small class="text-muted">تاريخ الاستحقاق</small>
+          <p class="mb-0 {% if ticket.is_overdue %}text-danger{% endif %}">
+            <i class="bi bi-alarm"></i> {{ ticket.due_date|date:"Y/m/d H:i" }}
+            {% if ticket.is_overdue %}
+            <span class="badge bg-danger">متأخر</span>
+            {% endif %}
+          </p>
+        </div>
         {% endif %}
 
       </div>
     </div>
 
     {% if ticket.assigned_to %}
-      <div class="card mb-3">
-        <div class="card-header bg-warning text-dark">
-          <h6 class="mb-0"><i class="bi bi-person-check"></i> معين إلى</h6>
-        </div>
-        <div class="card-body">
-          <p class="mb-0">
-            <i class="bi bi-person-badge"></i>
-            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
-          </p>
-        </div>
+    <div class="card mb-3">
+      <div class="card-header bg-warning text-dark">
+        <h6 class="mb-0"><i class="bi bi-person-check"></i> معين إلى</h6>
       </div>
+      <div class="card-body">
+        <p class="mb-0">
+          <i class="bi bi-person-badge"></i>
+          {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+        </p>
+      </div>
+    </div>
     {% endif %}
 
     <!-- Timeline الأنشطة -->
@@ -315,21 +475,21 @@
       <div class="card-body">
         <div class="timeline">
           {% for log in activity_logs %}
-            <div class="timeline-item">
-              <div class="timeline-marker">
-                <i class="bi bi-circle-fill" style="font-size: 8px; color: #667eea;"></i>
-              </div>
-              <div class="timeline-content">
-                <strong>{{ log.get_action_type_display }}</strong>
-                <p class="mb-1 small">{{ log.description }}</p>
-                <small class="text-muted">
-                  <i class="bi bi-person"></i> {{ log.performed_by_name }}
-                  | <i class="bi bi-clock"></i> {{ log.created_at|date:"Y/m/d H:i" }}
-                </small>
-              </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <i class="bi bi-circle-fill" style="font-size: 8px; color: #667eea;"></i>
             </div>
+            <div class="timeline-content">
+              <strong>{{ log.get_action_type_display }}</strong>
+              <p class="mb-1 small">{{ log.description }}</p>
+              <small class="text-muted">
+                <i class="bi bi-person"></i> {{ log.performed_by_name }}
+                | <i class="bi bi-clock"></i> {{ log.created_at|date:"Y/m/d H:i" }}
+              </small>
+            </div>
+          </div>
           {% empty %}
-            <p class="text-muted text-center"><i class="bi bi-info-circle"></i> لا توجد أنشطة مسجلة</p>
+          <p class="text-muted text-center"><i class="bi bi-info-circle"></i> لا توجد أنشطة مسجلة</p>
           {% endfor %}
         </div>
       </div>
@@ -339,19 +499,48 @@
 </div>
 
 <!-- Actions -->
-<div class="row">
+<div class="row no-print">
   <div class="col-md-12">
     <div class="text-center">
+      <!-- زر الطباعة -->
+      <button onclick="window.print()" class="btn btn-print">
+        <i class="bi bi-printer-fill"></i> طباعة الطلب
+      </button>
+
       <a href="{% url 'tickets:ticket_list' %}" class="btn btn-outline-primary">
         <i class="bi bi-arrow-right"></i> العودة إلى القائمة
       </a>
 
       {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'admin:tickets_ticket_change' ticket.id %}" class="btn btn-warning">
-          <i class="bi bi-pencil-fill"></i> تعديل (Admin)
-        </a>
+      <a href="{% url 'admin:tickets_ticket_change' ticket.id %}" class="btn btn-warning">
+        <i class="bi bi-pencil-fill"></i> تعديل (Admin)
+      </a>
       {% endif %}
     </div>
   </div>
 </div>
+
+<!-- Print Footer - يظهر فقط عند الطباعة -->
+<div class="print-footer">
+  <div class="developer-info">
+    <h4><i class="bi bi-code-slash"></i> تطوير وبرمجة</h4>
+    <p><strong>MUNTADHER HAZIM</strong></p>
+    <p><i class="bi bi-telephone-fill"></i> 07724978301</p>
+    <p><i class="bi bi-envelope-fill"></i> muntadherhazim95@gmail.com</p>
+  </div>
+  <div class="print-date">
+    <p>تاريخ الطباعة: <span id="printDate"></span></p>
+  </div>
+</div>
+
+<script>
+  // تعيين تاريخ الطباعة
+  document.getElementById('printDate').textContent = new Date().toLocaleDateString('ar-IQ', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+</script>
 {% endblock %}
